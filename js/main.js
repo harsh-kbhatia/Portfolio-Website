@@ -7,7 +7,25 @@ document.addEventListener('DOMContentLoaded', () => {
   initMobileMenu();
   initScrollAnimations();
   setActiveNav();
+  initParallaxBackground();
 });
+
+/* ---------- Parallax Background ---------- */
+function initParallaxBackground() {
+  document.addEventListener('mousemove', (e) => {
+    const x = e.clientX / window.innerWidth;
+    const y = e.clientY / window.innerHeight;
+
+    // Calculate offset (inverted direction for depth effect)
+    const px = (x - 0.5) * -100;
+    const py = (y - 0.5) * -100;
+
+    requestAnimationFrame(() => {
+      document.documentElement.style.setProperty('--px', `${px}px`);
+      document.documentElement.style.setProperty('--py', `${py}px`);
+    });
+  });
+}
 
 /* ---------- Theme Toggle ---------- */
 function initThemeToggle() {
@@ -18,7 +36,7 @@ function initThemeToggle() {
   const savedTheme = localStorage.getItem('theme');
   const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
   const theme = savedTheme || (prefersDark ? 'dark' : 'light');
-  
+
   document.documentElement.setAttribute('data-theme', theme);
   updateToggleIcon(theme);
 
@@ -34,7 +52,7 @@ function initThemeToggle() {
 function updateToggleIcon(theme) {
   const thumb = document.querySelector('.toggle-thumb');
   if (!thumb) return;
-  
+
   if (theme === 'dark') {
     thumb.innerHTML = `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z"/></svg>`;
   } else {
@@ -105,7 +123,7 @@ function initContactForm() {
     e.preventDefault();
     const btn = form.querySelector('button[type="submit"]');
     const originalText = btn.innerHTML;
-    
+
     btn.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="spin"><path d="M21 12a9 9 0 11-6.219-8.56"/></svg> Sending...`;
     btn.disabled = true;
 

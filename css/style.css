@@ -64,7 +64,9 @@
 }
 
 /* ---------- Reset & Base ---------- */
-*, *::before, *::after {
+*,
+*::before,
+*::after {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
@@ -104,14 +106,16 @@ img {
 body::before {
   content: '';
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+  top: -100px;
+  left: -100px;
+  width: calc(100% + 200px);
+  height: calc(100% + 200px);
   background-image:
     linear-gradient(var(--border-light) 1px, transparent 1px),
     linear-gradient(90deg, var(--border-light) 1px, transparent 1px);
   background-size: 60px 60px;
+  transform: translate(calc(var(--px, 0px) * 0.5), calc(var(--py, 0px) * 0.5));
+  transition: transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
   opacity: 0.5;
   pointer-events: none;
   z-index: 0;
@@ -126,6 +130,9 @@ body::before {
   pointer-events: none;
   z-index: 0;
   animation: float 15s ease-in-out infinite;
+  margin-left: calc(var(--px, 0px) * 1.5);
+  margin-top: calc(var(--py, 0px) * 1.5);
+  transition: margin-left 0.2s cubic-bezier(0.2, 0.8, 0.2, 1), margin-top 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
 .bg-orb-1 {
@@ -156,9 +163,19 @@ body::before {
 }
 
 @keyframes float {
-  0%, 100% { transform: translate(0, 0) scale(1); }
-  33% { transform: translate(30px, -30px) scale(1.05); }
-  66% { transform: translate(-20px, 20px) scale(0.95); }
+
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+
+  33% {
+    transform: translate(30px, -30px) scale(1.05);
+  }
+
+  66% {
+    transform: translate(-20px, 20px) scale(0.95);
+  }
 }
 
 [data-theme="dark"] .bg-orb {
@@ -769,8 +786,17 @@ body::before {
 }
 
 @keyframes pulse {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.5; transform: scale(1.3); }
+
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  50% {
+    opacity: 0.5;
+    transform: scale(1.3);
+  }
 }
 
 .hero h1 {
@@ -925,6 +951,7 @@ body::before {
     opacity: 0;
     transform: translateY(20px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -936,6 +963,7 @@ body::before {
     opacity: 0;
     transform: translateY(-20px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
