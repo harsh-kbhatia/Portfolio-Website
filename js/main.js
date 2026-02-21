@@ -192,73 +192,86 @@ function initFloatingElements() {
 
 /* ---------- Cursor Particles ---------- */
 function initCursorParticles() {
-  const particleCount = 15; // More particles for a messy circle
+  const particleCount = 15;
   const particles = [];
-  const baseRadius = 22; // Base radius of the circle
+  const baseRadius = 22;
 
-  // Create particles
+  // Wrap particles in a container to completely hide them until confirmed mouse activity
+  const container = document.createElement('div');
+  container.className = 'cursor-wrap';
+  container.style.position = 'fixed';
+  container.style.top = '0';
+  container.style.left = '0';
+  container.style.width = '100vw';
+  container.style.height = '100vh';
+  container.style.pointerEvents = 'none';
+  container.style.zIndex = '9999';
+  container.style.display = 'none'; // Hard hidden to prevent any visible artifacts
+  document.body.appendChild(container);
+
   for (let i = 0; i < particleCount; i++) {
     const el = document.createElement('div');
     el.className = 'cursor-particle';
-    el.style.opacity = '0'; // Hidden initially
-    el.style.transition = 'opacity 0.3s ease'; // Fade in
-    document.body.appendChild(el);
+    el.style.position = 'absolute'; // Position relative to fixed container
 
-    const size = Math.random() * 4 + 2; // Random sizes 2px - 6px
+    const size = Math.random() * 4 + 2;
     el.style.width = `${size}px`;
     el.style.height = `${size}px`;
 
+    container.appendChild(el);
+
     particles.push({
       el,
-      angle: Math.random() * Math.PI * 2, // Random starting angle
-      speed: 0.8 + Math.random() * 1.5, // Random rotation speed
-      radiusOffset: (Math.random() - 0.5) * 16, // Random offset from base ring
+      angle: Math.random() * Math.PI * 2,
+      speed: 0.8 + Math.random() * 1.5,
+      radiusOffset: (Math.random() - 0.5) * 16,
     });
   }
 
-  // Mouse tracking
-  let mouseX = window.innerWidth / 2;
-  let mouseY = window.innerHeight / 2;
-  let currentX = mouseX;
-  let currentY = mouseY;
+  let mouseX = 0;
+  let mouseY = 0;
+  let currentX = 0;
+  let currentY = 0;
   let hasMoved = false;
 
   document.addEventListener('mousemove', (e) => {
-    // Ignore synthetic mousemove events at (0,0) that browsers sometimes fire on page load
-    if (!hasMoved && e.clientX === 0 && e.clientY === 0) return;
+    // Robust check for missing coordinates to prevent NaN CSS transform crashes
+    if (typeof e.clientX !== 'number' || typeof e.clientY !== 'number') return;
+    // Ignore dead synthetic events
+    if (e.clientX === 0 && e.clientY === 0 && !hasMoved) return;
 
     mouseX = e.clientX;
     mouseY = e.clientY;
 
     if (!hasMoved) {
       hasMoved = true;
-      currentX = mouseX; // Snap exactly to mouse on first move
+      currentX = mouseX;
       currentY = mouseY;
-      particles.forEach(p => {
-        p.el.style.opacity = '0.8'; // Show particles
-      });
+      container.style.display = 'block'; // Safely unhide
     }
   });
 
-  // Animate particles
   function animate() {
     if (hasMoved) {
-      // Parent container smoothly follows mouse
       currentX += (mouseX - currentX) * 0.15;
       currentY += (mouseY - currentY) * 0.15;
 
       const time = performance.now() / 1000;
 
       particles.forEach((p) => {
-        // Rotation angle
         const rotation = time * p.speed;
         const currentAngle = p.angle + rotation;
-
         const r = baseRadius + p.radiusOffset;
         const offsetX = Math.cos(currentAngle) * r;
         const offsetY = Math.sin(currentAngle) * r;
 
-        p.el.style.transform = `translate(calc(-50% + ${currentX + offsetX}px), calc(-50% + ${currentY + offsetY}px))`;
+        const targetX = currentX + offsetX;
+        const targetY = currentY + offsetY;
+
+        // Final guard against invalid CSS syntax
+        if (!isNaN(targetX) && !isNaN(targetY)) {
+          p.el.style.transform = `translate(calc(-50% + ${targetX}px), calc(-50% + ${targetY}px))`;
+        }
       });
     }
 
