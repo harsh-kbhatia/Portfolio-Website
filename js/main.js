@@ -192,20 +192,27 @@ function initFloatingElements() {
 
 /* ---------- Cursor Particles ---------- */
 function initCursorParticles() {
-  const particleCount = 12; // More particles for a better circle
+  const particleCount = 15; // More particles for a messy circle
   const particles = [];
-  const radius = 20; // Radius of the circle
+  const baseRadius = 22; // Base radius of the circle
 
   // Create particles
   for (let i = 0; i < particleCount; i++) {
     const el = document.createElement('div');
     el.className = 'cursor-particle';
+    el.style.opacity = '0'; // Hidden initially
+    el.style.transition = 'opacity 0.3s ease'; // Fade in
     document.body.appendChild(el);
+
+    const size = Math.random() * 4 + 2; // Random sizes 2px - 6px
+    el.style.width = `${size}px`;
+    el.style.height = `${size}px`;
+
     particles.push({
       el,
-      x: window.innerWidth / 2,
-      y: window.innerHeight / 2,
-      angle: (i / particleCount) * Math.PI * 2, // Evenly spaced 
+      angle: Math.random() * Math.PI * 2, // Random starting angle
+      speed: 0.8 + Math.random() * 1.5, // Random rotation speed
+      radiusOffset: (Math.random() - 0.5) * 16, // Random offset from base ring
     });
   }
 
@@ -214,30 +221,43 @@ function initCursorParticles() {
   let mouseY = window.innerHeight / 2;
   let currentX = mouseX;
   let currentY = mouseY;
+  let hasMoved = false;
 
   document.addEventListener('mousemove', (e) => {
     mouseX = e.clientX;
     mouseY = e.clientY;
+
+    if (!hasMoved) {
+      hasMoved = true;
+      currentX = mouseX; // Snap exactly to mouse on first move
+      currentY = mouseY;
+      particles.forEach(p => {
+        p.el.style.opacity = '0.8'; // Show particles
+      });
+    }
   });
 
   // Animate particles
   function animate() {
-    // Parent container smoothly follows mouse
-    currentX += (mouseX - currentX) * 0.15;
-    currentY += (mouseY - currentY) * 0.15;
+    if (hasMoved) {
+      // Parent container smoothly follows mouse
+      currentX += (mouseX - currentX) * 0.15;
+      currentY += (mouseY - currentY) * 0.15;
 
-    const time = performance.now() / 1000;
+      const time = performance.now() / 1000;
 
-    particles.forEach((p) => {
-      // Rotation angle
-      const rotation = time * 2;
-      const currentAngle = p.angle + rotation;
+      particles.forEach((p) => {
+        // Rotation angle
+        const rotation = time * p.speed;
+        const currentAngle = p.angle + rotation;
 
-      const offsetX = Math.cos(currentAngle) * radius;
-      const offsetY = Math.sin(currentAngle) * radius;
+        const r = baseRadius + p.radiusOffset;
+        const offsetX = Math.cos(currentAngle) * r;
+        const offsetY = Math.sin(currentAngle) * r;
 
-      p.el.style.transform = `translate(calc(-50% + ${currentX + offsetX}px), calc(-50% + ${currentY + offsetY}px))`;
-    });
+        p.el.style.transform = `translate(calc(-50% + ${currentX + offsetX}px), calc(-50% + ${currentY + offsetY}px))`;
+      });
+    }
 
     requestAnimationFrame(animate);
   }
