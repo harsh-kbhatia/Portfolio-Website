@@ -224,6 +224,9 @@ function initCursorParticles() {
   let hasMoved = false;
 
   document.addEventListener('mousemove', (e) => {
+    // Ignore synthetic mousemove events at (0,0) that browsers sometimes fire on page load
+    if (!hasMoved && e.clientX === 0 && e.clientY === 0) return;
+
     mouseX = e.clientX;
     mouseY = e.clientY;
 
@@ -267,7 +270,7 @@ function initCursorParticles() {
 
 /* ---------- Interactive Cards ---------- */
 function initInteractiveCards() {
-  const cards = document.querySelectorAll('.card');
+  const cards = document.querySelectorAll('.card, .contact-info-card');
   cards.forEach(card => {
     card.addEventListener('mousemove', e => {
       const rect = card.getBoundingClientRect();

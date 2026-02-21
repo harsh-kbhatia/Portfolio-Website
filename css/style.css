@@ -515,18 +515,14 @@ body::before {
 }
 
 /* ---------- Cards ---------- */
-.card {
-  background: var(--bg-card);
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius-lg);
-  padding: 1.75rem;
-  transition: border-color var(--transition), box-shadow var(--transition), transform var(--transition);
-  box-shadow: var(--shadow-card);
+.card,
+.contact-info-card {
   position: relative;
   overflow: hidden;
 }
 
-.card::before {
+.card::before,
+.contact-info-card::before {
   content: '';
   position: absolute;
   top: 0;
@@ -542,9 +538,19 @@ body::before {
   z-index: 0;
 }
 
-.card>* {
+.card>*,
+.contact-info-card>* {
   position: relative;
   z-index: 1;
+}
+
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: 1.75rem;
+  transition: border-color var(--transition), box-shadow var(--transition), transform var(--transition);
+  box-shadow: var(--shadow-card);
 }
 
 .card:hover {
@@ -553,7 +559,8 @@ body::before {
   transform: translateY(-2px);
 }
 
-.card:hover::before {
+.card:hover::before,
+.contact-info-card:hover::before {
   opacity: 1;
 }
 
