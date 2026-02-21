@@ -9,7 +9,7 @@ document.addEventListener('DOMContentLoaded', () => {
   setActiveNav();
   initParallaxBackground();
   initFloatingElements();
-  initPageTransitions();
+  initCursorParticles();
   initInteractiveCards();
 });
 
@@ -190,29 +190,56 @@ function initFloatingElements() {
   document.body.prepend(container);
 }
 
-/* ---------- Page Transitions ---------- */
-function initPageTransitions() {
-  document.querySelectorAll('a').forEach(link => {
-    if (link.hostname === window.location.hostname &&
-      link.target !== '_blank' &&
-      !link.href.includes('mailto:') &&
-      !link.hasAttribute('download')) {
+/* ---------- Cursor Particles ---------- */
+function initCursorParticles() {
+  const particleCount = 4;
+  const particles = [];
 
-      link.addEventListener('click', (e) => {
-        const isThemeToggle = link.closest('.theme-toggle');
-        if (isThemeToggle || link.getAttribute('href').startsWith('#')) return;
+  // Create particles
+  for (let i = 0; i < particleCount; i++) {
+    const el = document.createElement('div');
+    el.className = 'cursor-particle';
+    document.body.appendChild(el);
+    particles.push({
+      el,
+      x: window.innerWidth / 2,
+      y: window.innerHeight / 2,
+      targetX: window.innerWidth / 2,
+      targetY: window.innerHeight / 2,
+      speed: 0.15 - (i * 0.03) // Stagger speeds
+    });
+  }
 
-        e.preventDefault();
-        const target = link.href;
-
-        document.body.classList.add('page-exit');
-
-        setTimeout(() => {
-          window.location.href = target;
-        }, 300); // Wait for fade out
-      });
-    }
+  // Update target coordinates on mouse move
+  document.addEventListener('mousemove', (e) => {
+    particles.forEach(p => {
+      p.targetX = e.clientX;
+      p.targetY = e.clientY;
+    });
   });
+
+  // Animate particles
+  function animate() {
+    particles.forEach((p, index) => {
+      // Smooth follow
+      p.x += (p.targetX - p.x) * p.speed;
+      p.y += (p.targetY - p.y) * p.speed;
+
+      // Add slight orbital motion based on time
+      const time = performance.now() / 1000;
+      const radius = 12 + (index * 4);
+      const angle = (time * (index + 1)) + (index * Math.PI / 2);
+
+      const offsetX = Math.cos(angle) * radius;
+      const offsetY = Math.sin(angle) * radius;
+
+      p.el.style.transform = `translate(calc(-50% + ${p.x + offsetX}px), calc(-50% + ${p.y + offsetY}px))`;
+    });
+
+    requestAnimationFrame(animate);
+  }
+
+  animate();
 }
 
 /* ---------- Interactive Cards ---------- */

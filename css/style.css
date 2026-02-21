@@ -82,28 +82,9 @@ body {
   background: var(--bg-primary);
   color: var(--text-primary);
   line-height: 1.7;
-  transition: background var(--transition), color var(--transition), opacity 0.3s ease, transform 0.3s ease;
+  transition: background var(--transition), color var(--transition);
   min-height: 100vh;
   overflow-x: hidden;
-  opacity: 0;
-  animation: pageEnter 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
-}
-
-@keyframes pageEnter {
-  from {
-    opacity: 0;
-    transform: translateY(15px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-body.page-exit {
-  opacity: 0 !important;
-  transform: translateY(-15px);
 }
 
 a {
@@ -291,6 +272,26 @@ body::before {
     margin-left: 0;
     rotate: 180deg;
   }
+}
+
+/* ---------- Cursor Particles ---------- */
+.cursor-particle {
+  position: fixed;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+  pointer-events: none;
+  z-index: 9999;
+  mix-blend-mode: screen;
+  opacity: 0.6;
+  box-shadow: 0 0 10px var(--accent-glow);
+  transform: translate(-50%, -50%);
+  /* Centered on coordinates */
+}
+
+[data-theme="light"] .cursor-particle {
+  mix-blend-mode: multiply;
 }
 
 /* ---------- Navigation ---------- */
