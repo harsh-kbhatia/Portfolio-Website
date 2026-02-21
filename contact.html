@@ -10,6 +10,13 @@
     <link rel="stylesheet" href="css/style.css">
     <link rel="icon"
         href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>H</text></svg>">
+  <script>
+    const savedTheme = localStorage.getItem("theme");
+    const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+    const theme = savedTheme || (prefersDark ? "dark" : "light");
+    document.documentElement.setAttribute("data-theme", theme);
+  </script>
+
 </head>
 
 <body>
@@ -21,7 +28,7 @@
     <nav class="navbar">
         <div class="container">
             <a href="index.html" class="nav-logo">
-                Harsh<span class="logo-accent">.</span>
+                <span class="logo-accent">H</span>arsh<span class="logo-accent">.</span>
             </a>
             <ul class="nav-links">
                 <li><a href="index.html">Home</a></li>
@@ -110,7 +117,7 @@
                     </div>
                     <div class="info-content">
                         <h4>LinkedIn</h4>
-                        <p><a href="https://linkedin.com/in/" target="_blank">Connect on LinkedIn</a></p>
+                        <p><a href="https://linkedin.com/in/harshkbhatia" target="_blank">Connect on LinkedIn</a></p>
                     </div>
                 </div>
             </div>
@@ -157,7 +164,7 @@
             <p>&copy; 2025 Harsh Bhatia. All rights reserved.</p>
             <div class="footer-links">
                 <a href="https://linkedin.com/in/">LinkedIn</a>
-                <a href="https://github.com/">GitHub</a>
+                <a href="https://github.com/harsh-kbhatia">GitHub</a>
                 <a href="mailto:hbhatia3@outlook.com">Email</a>
             </div>
         </div>

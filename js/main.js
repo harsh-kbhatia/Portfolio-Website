@@ -192,8 +192,9 @@ function initFloatingElements() {
 
 /* ---------- Cursor Particles ---------- */
 function initCursorParticles() {
-  const particleCount = 4;
+  const particleCount = 12; // More particles for a better circle
   const particles = [];
+  const radius = 20; // Radius of the circle
 
   // Create particles
   for (let i = 0; i < particleCount; i++) {
@@ -204,36 +205,38 @@ function initCursorParticles() {
       el,
       x: window.innerWidth / 2,
       y: window.innerHeight / 2,
-      targetX: window.innerWidth / 2,
-      targetY: window.innerHeight / 2,
-      speed: 0.15 - (i * 0.03) // Stagger speeds
+      angle: (i / particleCount) * Math.PI * 2, // Evenly spaced 
     });
   }
 
-  // Update target coordinates on mouse move
+  // Mouse tracking
+  let mouseX = window.innerWidth / 2;
+  let mouseY = window.innerHeight / 2;
+  let currentX = mouseX;
+  let currentY = mouseY;
+
   document.addEventListener('mousemove', (e) => {
-    particles.forEach(p => {
-      p.targetX = e.clientX;
-      p.targetY = e.clientY;
-    });
+    mouseX = e.clientX;
+    mouseY = e.clientY;
   });
 
   // Animate particles
   function animate() {
-    particles.forEach((p, index) => {
-      // Smooth follow
-      p.x += (p.targetX - p.x) * p.speed;
-      p.y += (p.targetY - p.y) * p.speed;
+    // Parent container smoothly follows mouse
+    currentX += (mouseX - currentX) * 0.15;
+    currentY += (mouseY - currentY) * 0.15;
 
-      // Add slight orbital motion based on time
-      const time = performance.now() / 1000;
-      const radius = 12 + (index * 4);
-      const angle = (time * (index + 1)) + (index * Math.PI / 2);
+    const time = performance.now() / 1000;
 
-      const offsetX = Math.cos(angle) * radius;
-      const offsetY = Math.sin(angle) * radius;
+    particles.forEach((p) => {
+      // Rotation angle
+      const rotation = time * 2;
+      const currentAngle = p.angle + rotation;
 
-      p.el.style.transform = `translate(calc(-50% + ${p.x + offsetX}px), calc(-50% + ${p.y + offsetY}px))`;
+      const offsetX = Math.cos(currentAngle) * radius;
+      const offsetY = Math.sin(currentAngle) * radius;
+
+      p.el.style.transform = `translate(calc(-50% + ${currentX + offsetX}px), calc(-50% + ${currentY + offsetY}px))`;
     });
 
     requestAnimationFrame(animate);
