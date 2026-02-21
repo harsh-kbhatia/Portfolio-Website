@@ -8,6 +8,9 @@ document.addEventListener('DOMContentLoaded', () => {
   initScrollAnimations();
   setActiveNav();
   initParallaxBackground();
+  initFloatingElements();
+  initPageTransitions();
+  initInteractiveCards();
 });
 
 /* ---------- Parallax Background ---------- */
@@ -153,5 +156,76 @@ function initContactForm() {
       status.className = 'form-status';
       status.style.display = 'none';
     }, 5000);
+  });
+}
+
+/* ---------- Floating Elements ---------- */
+function initFloatingElements() {
+  const container = document.createElement('div');
+  container.className = 'floating-elements';
+
+  const shapes = ['dot', 'cross', 'circle'];
+  const count = 15;
+
+  for (let i = 0; i < count; i++) {
+    const el = document.createElement('div');
+    const shape = shapes[Math.floor(Math.random() * shapes.length)];
+    el.className = `floating-shape ${shape}`;
+
+    // Spread across screen
+    el.style.left = `${Math.random() * 100}vw`;
+    el.style.top = `${Math.random() * 100}vh`;
+
+    // Random depth for parallax
+    const depth = Math.random() * 2 + 0.5;
+    el.style.setProperty('--depth', depth);
+
+    // Random float animation
+    el.style.animationDuration = `${Math.random() * 15 + 10}s`;
+    el.style.animationDelay = `${Math.random() * -20}s`;
+
+    container.appendChild(el);
+  }
+
+  document.body.prepend(container);
+}
+
+/* ---------- Page Transitions ---------- */
+function initPageTransitions() {
+  document.querySelectorAll('a').forEach(link => {
+    if (link.hostname === window.location.hostname &&
+      link.target !== '_blank' &&
+      !link.href.includes('mailto:') &&
+      !link.hasAttribute('download')) {
+
+      link.addEventListener('click', (e) => {
+        const isThemeToggle = link.closest('.theme-toggle');
+        if (isThemeToggle || link.getAttribute('href').startsWith('#')) return;
+
+        e.preventDefault();
+        const target = link.href;
+
+        document.body.classList.add('page-exit');
+
+        setTimeout(() => {
+          window.location.href = target;
+        }, 300); // Wait for fade out
+      });
+    }
+  });
+}
+
+/* ---------- Interactive Cards ---------- */
+function initInteractiveCards() {
+  const cards = document.querySelectorAll('.card');
+  cards.forEach(card => {
+    card.addEventListener('mousemove', e => {
+      const rect = card.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+
+      card.style.setProperty('--mouse-x', `${x}px`);
+      card.style.setProperty('--mouse-y', `${y}px`);
+    });
   });
 }
